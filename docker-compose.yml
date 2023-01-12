@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  app:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    networks:
+      - fullapp
+    ports:
+      - "3000:3000"
+    image: t3-app
+    environment:
+      - DATABASE_URL=mysql://myuser:pass@db:3306/readerfrontdb
+  db:
+    image: mariadb:10.9
+    restart: always
+    networks:
+      - fullapp
+    volumes:
+      - ~/apps/mariadb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secretpass
+      - MYSQL_PASSWORD=pass
+      - MYSQL_USER=myuser
+      - MYSQL_DATABASE=readerfrontdb
+networks:
+  fullapp:
